@@ -12,19 +12,20 @@
     <!-- 包含了所有编译插件 -->
     <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+		<script>
+			console.log("url:",window.location.href)
+		</script>
     <script type="text/javascript">window.onload = function() {
         Vue.http.options.emulateHTTP = true;
         var vm = new Vue({
           el: '#box',
           data: {
-	    //requrl: 'http://10.78.177.47:8082',
-            requrl: 'http://20.26.28.83:8082',
             telnetinfo:{}
           },
           methods: {
             getinfo: function() {
               //发送get请求
-              this.$http.get(this.requrl+'/version').then(function(res) {
+              this.$http.get("http://"+window.location.host+":"+window.location.port+'/version').then(function(res) {
                 alert(res.body);
               },
               function() {
@@ -35,7 +36,7 @@
             telnet: function() {
               //发送post请求
               var vm=this
-              vm.$http.post(vm.requrl+'/telnet',vm.telnetinfo).then(function(res) {
+              vm.$http.post(window.location.href,vm.telnetinfo).then(function(res) {
                 alert(res.body);
               },
               function() {
@@ -47,18 +48,19 @@
       }</script>
 	  <style type="text/css">
 		  .color{color:#FF2200;}
+			.maindiv{margin:0 auto;width:400px;height:100px;border:0px solid #F00}
 	  </style>
   </head>
   
   <body>
-    <div id="box" class="container">
+    <div id="box" class="container maindiv">
       <div class="">
         <h1 class="color text-center">主机连通性测试</h1>
       </div>
       <div class="input-group">
         <div class="">
-		  <span class="input-group-btn"><button class="btn btn-default" type="button">源地址</button></span>
-		  <input class="form-control" type="text" name="srcip" v-model="telnetinfo.srcip" placeholder="192.168.1.100" aria-describedby="basic-addon1"/>
+		  		<span class="input-group-btn"><button class="btn btn-default" type="button">源地址</button></span>
+		  		<input class="form-control" type="text" name="srcip" v-model="telnetinfo.srcip" placeholder="192.168.1.100" aria-describedby="basic-addon1"/>
         </div>          
         <div class="">
           <span class="input-group-btn"><button class="btn btn-default" type="button">目的地址</button></span>

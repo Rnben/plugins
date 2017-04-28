@@ -8,7 +8,7 @@ package controllers
 //        Author: xwisen 1031649164@qq.com
 //   Description: ---
 //        Create: 2017-04-25 18:15:32
-// Last Modified: 2017-04-28 09:40:38
+// Last Modified: 2017-04-28 10:39:30
 //***********************************************
 
 import (
@@ -31,6 +31,7 @@ type NcController struct {
 }
 
 func (ncc *NcController) TelnetPost() {
+	ncc.TplName = "telnet.tpl"
 	logs.Info("Start nc .......................")
 	logs.Info("request body is : %s", ncc.Ctx.Input.URI())
 	if len(ncc.Ctx.Input.RequestBody) == 0 {
@@ -112,7 +113,7 @@ func (ncc *NcController) TelnetPost() {
 }
 
 func (ncc *NcController) TelnetGet() {
-
+	ncc.TplName = "telnet.tpl"
 }
 
 func (ncc *NcController) GetVersion() {
