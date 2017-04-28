@@ -8,7 +8,7 @@ package controllers
 //        Author: xwisen 1031649164@qq.com
 //   Description: ---
 //        Create: 2017-04-25 18:15:32
-// Last Modified: 2017-04-27 16:57:40
+// Last Modified: 2017-04-28 09:40:38
 //***********************************************
 
 import (
@@ -17,7 +17,13 @@ import (
 	"github.com/astaxie/beego/logs"
 	"github.com/xwisen/plugins/models"
 	"os/exec"
+	"regexp"
 	"strings"
+)
+
+const (
+	ipregexp   string = `^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`
+	portregexp string = `^([0-9]|[1-9]\d{1,3}|[1-5]\d{4}|6[0-5]{2}[0-3][0-5])$`
 )
 
 type NcController struct {
@@ -38,6 +44,43 @@ func (ncc *NcController) TelnetPost() {
 		return
 	}
 	logs.Info("nc is: %+v", nc)
+	//匹配IP信息
+	IPRegexp := regexp.MustCompile(ipregexp)
+	if err != nil {
+		logs.Error("匹配IP的正则表达式不正确")
+		ncc.Data["json"] = "{\"info\":\"匹配IP的正则表达式不正确\"}"
+		ncc.ServeJSON()
+		return
+	}
+	matched := IPRegexp.MatchString(nc.SrcIP)
+	if !matched {
+		logs.Error("源地址格式不正确")
+		ncc.Data["json"] = "{\"info\":\"源地址格式不正确\"}"
+		ncc.ServeJSON()
+		return
+	}
+	matched = IPRegexp.MatchString(nc.DesIP)
+	if !matched {
+		logs.Error("目的地址格式不正确")
+		ncc.Data["json"] = "{\"info\":\"目的地址格式不正确\"}"
+		ncc.ServeJSON()
+		return
+	}
+	//匹配端口信息
+	PortRegexp := regexp.MustCompile(portregexp)
+	if err != nil {
+		logs.Error("匹配端口的正则表达式不正确")
+		ncc.Data["json"] = "{\"info\":\"匹配端口的正则表达式不正确\"}"
+		ncc.ServeJSON()
+		return
+	}
+	matched = PortRegexp.MatchString(nc.DesPort)
+	if !matched {
+		logs.Error("目的端口格式不正确")
+		ncc.Data["json"] = "{\"info\":\"目的端口格式不正确\"}"
+		ncc.ServeJSON()
+		return
+	}
 	//ssh 10.78.221.181 "nc 10.78.182.10 2181 -i 1 -w 1 -v"
 	ncCMD := exec.Command("ssh", nc.SrcIP, "nc", nc.DesIP, nc.DesPort, "-i", "1", "-w", "1", "-v")
 	logs.Info("ssh %s nc %s %s -i 1 -w 1 -v", nc.SrcIP, nc.DesIP, nc.DesPort)
